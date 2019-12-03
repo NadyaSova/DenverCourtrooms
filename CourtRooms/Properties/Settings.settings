@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CourtRooms.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="DeathByCaptchaLogin" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">nab403</Value>
+    </Setting>
+    <Setting Name="DeathByCaptchaPassword" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">S5k7VBDfRx</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
