@@ -114,6 +114,8 @@ namespace CourtRooms.Models.Crawlers
                 LogAlreadyExists(caseNumber);
                 return;
             }
+            if (cancellationToken.IsCancellationRequested)
+                return;
 
             await selenium.GoToUrlAsync(caseLink, cancellationToken);
             if (cancellationToken.IsCancellationRequested)
