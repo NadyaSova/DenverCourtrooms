@@ -117,6 +117,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Crawlers\CaseNumberCrawler.cs" />
+    <Compile Include="Models\Crawlers\InmateCrawler.cs" />
     <Compile Include="Models\Parsers\CourtroomsParser.cs" />
     <Compile Include="Helpers\Selenium.cs" />
     <Compile Include="Models\CrawlerSettings\CalendarCrawlerSettings.cs" />
