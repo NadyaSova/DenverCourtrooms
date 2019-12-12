@@ -14,7 +14,7 @@ namespace CourtRooms.Models.CrawlerSettings
             To = to;
         }
 
-        public override IEnumerable<string> SearchParameters
+        public override IEnumerable<string> SearchRange
         {
             get
             {

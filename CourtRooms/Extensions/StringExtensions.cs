@@ -11,17 +11,36 @@ namespace CourtRooms.Extensions
     public static class StringExtensions
     {
         private static readonly string ShortDateFormat = "MM/dd/yyyy";
+        private static readonly string InmatesDateFormat = "MMMM dd, yyyy";
         private static readonly CultureInfo UsCulture = CultureInfo.CreateSpecificCulture("en-US");
 
-        public static DateTime? ToShortDate(this string s)
+        public static DateTime? ToDateFromFormat(this string s, string format)
         {
-            if (DateTime.TryParseExact(s, ShortDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
+            if (DateTime.TryParseExact(s, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
                 return result;
 
             return null;
         }
 
-        public static DateTime? ToLongDate(this string s)
+        public static DateTime? ToDate(this string s)
+        {
+            if (DateTime.TryParse(s, out DateTime result))
+                return result;
+
+            return null;
+        }
+
+        public static DateTime? ToDateFromShortFormat(this string s)
+        {
+            return s.ToDateFromFormat(ShortDateFormat);
+        }
+
+        public static DateTime? ToDateFromInmatesFormat(this string s)
+        {
+            return s.ToDateFromFormat(InmatesDateFormat);
+        }
+
+        public static DateTime? ToDateFromDefaultUsFormat(this string s)
         {
             if (DateTime.TryParse(s, UsCulture, DateTimeStyles.None, out DateTime result))
                 return result;

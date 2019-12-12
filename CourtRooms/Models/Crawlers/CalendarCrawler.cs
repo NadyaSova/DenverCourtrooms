@@ -22,7 +22,7 @@ namespace CourtRooms.Models.Crawlers
 
         public override async Task Start(CalendarCrawlerSettings crawlerSettings)
         {
-            foreach (var searchParameters in crawlerSettings.SearchParameters)
+            foreach (var searchParameters in crawlerSettings.SearchRange)
             {
                 try
                 {
@@ -58,7 +58,7 @@ namespace CourtRooms.Models.Crawlers
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var caseLinks = parser.GetCaseLinks(selenium.CurrentPage);
+            var caseLinks = courtroomsParser.GetCaseLinks(selenium.CurrentPage);
             if (caseLinks == null)
             {
                 var isTokenValid = await IsTokenValid();
@@ -107,7 +107,7 @@ namespace CourtRooms.Models.Crawlers
         {
             var caseNumber = caseLink.GetUrlParameter("casenumber");
 
-            Log($"Processing case number {caseNumber}...");
+            Log(Environment.NewLine + $"Processing case number {caseNumber}...");
 
             if (await DefendantHelper.CaseExistAsync(caseNumber))
             {
@@ -121,17 +121,17 @@ namespace CourtRooms.Models.Crawlers
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var defendant = parser.GetDefendant(selenium.CurrentPage);
+            if (courtroomsParser.IsNoRecords(selenium.CurrentPage))
+            {
+                Log("Case not found");
+                return;
+            }
+
+            var defendant = courtroomsParser.GetDefendant(selenium.CurrentPage);
             if (defendant == null)
                 return;
 
-            if (await DefendantHelper.AddDefendantAsync(defendant))
-                LogCase(defendant);
-            else
-                LogAlreadyExists(defendant.CaseNumber);
-
-            if (cancellationToken.IsCancellationRequested)
-                return;
+            await AddDefendant(defendant);
         }
 
         protected override async Task GoToSearchUrl()
@@ -180,7 +180,7 @@ namespace CourtRooms.Models.Crawlers
 
             //If we still see come cases, the token is valid.
             //If we don't see them, the token has expired.
-            var caseLinks = parser.GetCaseLinks(selenium.CurrentPage);
+            var caseLinks = courtroomsParser.GetCaseLinks(selenium.CurrentPage);
             return caseLinks != null;
         }
 
@@ -211,7 +211,7 @@ namespace CourtRooms.Models.Crawlers
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-            var caseLinks = parser.GetCaseLinks(selenium.CurrentPage);
+            var caseLinks = courtroomsParser.GetCaseLinks(selenium.CurrentPage);
             if (caseLinks == null || caseLinks.Count == 0)
                 return new TokenResult { IsEmpty = true };
 

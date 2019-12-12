@@ -92,7 +92,9 @@
     <Compile Include="Entities\Attorney.cs" />
     <Compile Include="Entities\Bond.cs" />
     <Compile Include="Entities\BondDetail.cs" />
+    <Compile Include="Entities\CaseDetail.cs" />
     <Compile Include="Entities\Cost.cs" />
+    <Compile Include="Entities\CourtInformation.cs" />
     <Compile Include="Entities\Defendant.cs" />
     <Compile Include="Entities\Sentence.cs" />
     <Compile Include="Entities\SentenceDetail.cs" />
@@ -113,6 +115,10 @@
     <Compile Include="Migrations\201911161848244_NullableDates.cs" />
     <Compile Include="Migrations\201911161848244_NullableDates.Designer.cs">
       <DependentUpon>201911161848244_NullableDates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201912061011214_AddCourtInformaion.cs" />
+    <Compile Include="Migrations\201912061011214_AddCourtInformaion.Designer.cs">
+      <DependentUpon>201912061011214_AddCourtInformaion.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -135,6 +141,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201911161848244_NullableDates.resx">
       <DependentUpon>201911161848244_NullableDates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201912061011214_AddCourtInformaion.resx">
+      <DependentUpon>201912061011214_AddCourtInformaion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

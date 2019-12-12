@@ -13,7 +13,8 @@ namespace CourtRooms.Models.Crawlers
 
         public override async Task Start(CaseNumberCrawlerSettings crawlerSettings)
         {
-            foreach (var caseNumber in crawlerSettings.SearchParameters)
+            Log($"Processing cases {crawlerSettings.From} to {crawlerSettings.To}...");
+            foreach (var caseNumber in crawlerSettings.SearchRange)
             {
                 try
                 {
@@ -33,7 +34,7 @@ namespace CourtRooms.Models.Crawlers
 
         private async Task ProcessCase (string caseNumber)
         {
-            Log($"Processing case number {caseNumber}...");
+            Log(Environment.NewLine + $"Processing case number {caseNumber}...");
 
             if (await DefendantHelper.CaseExistAsync(caseNumber))
             {
@@ -49,24 +50,18 @@ namespace CourtRooms.Models.Crawlers
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            if (parser.IsNoRecords(selenium.CurrentPage))
+            if (courtroomsParser.IsNoRecords(selenium.CurrentPage))
             {
                 Log("Case not found");
                 return;
             }
 
-            var defendant = parser.GetDefendant(selenium.CurrentPage);
+            var defendant = courtroomsParser.GetDefendant(selenium.CurrentPage);
             if (defendant == null)
                 return;
 
-            if (await DefendantHelper.AddDefendantAsync(defendant))
-                LogCase(defendant);
-            else
-                LogAlreadyExists(defendant.CaseNumber);
-
+            await AddDefendant(defendant);
             LogLastProcessed(caseNumber);
-            if (cancellationToken.IsCancellationRequested)
-                return;
         }
 
         protected override async Task GoToSearchUrl()

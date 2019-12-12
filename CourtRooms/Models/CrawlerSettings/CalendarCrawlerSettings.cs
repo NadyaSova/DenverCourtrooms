@@ -18,7 +18,7 @@ namespace CourtRooms.Models.CrawlerSettings
             CourtroomName = courtroomName;
         }
 
-        public override IEnumerable<CalendarSearchSettings> SearchParameters
+        public override IEnumerable<CalendarSearchSettings> SearchRange
         {
             get
             {

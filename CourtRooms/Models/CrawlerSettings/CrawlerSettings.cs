@@ -4,6 +4,6 @@ namespace CourtRooms.Models.CrawlerSettings
 {
     public abstract class CrawlerSettings<SearchSettingsType>
     {
-        public abstract IEnumerable<SearchSettingsType> SearchParameters { get; }
+        public abstract IEnumerable<SearchSettingsType> SearchRange { get; }
     }
 }

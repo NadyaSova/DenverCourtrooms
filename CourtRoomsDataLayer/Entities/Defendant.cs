@@ -41,6 +41,8 @@ namespace CourtRoomsDataLayer.Entities
         public List<Cost> Costs { get; set; }
         public List<Action> Actions { get; set; }
         public List<Sentence> Sentences { get; set; }
+        public List<CourtInformation> CourtInformations { get; set; }
+        public List<CaseDetail> CaseDetails { get; set; }
 
 
         public Defendant()
@@ -51,6 +53,8 @@ namespace CourtRoomsDataLayer.Entities
             Actions = new List<Action>();
             Sentences = new List<Sentence>();
             Bonds = new List<Bond>();
+            CourtInformations = new List<CourtInformation>();
+            CaseDetails = new List<CaseDetail>();
         }
     }
 }

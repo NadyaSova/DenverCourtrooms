@@ -1,7 +1,11 @@
 ﻿using CourtRooms.Helpers;
 using CourtRooms.Models.CrawlerSettings;
+using CourtRooms.Models.Parsers;
 using CourtRoomsDataLayer.Entities;
+using CourtRoomsDataLayer.Helpers;
 using DeathByCaptcha;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
@@ -11,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ExpectedConditions = SeleniumExtras.WaitHelpers.ExpectedConditions;
 
 
 namespace CourtRooms.Models.Crawlers
@@ -19,7 +24,8 @@ namespace CourtRooms.Models.Crawlers
         where CrawlerSettingsType: CrawlerSettings<SearchSettingsType> 
     {
         protected Selenium selenium;
-        protected Parser parser;
+        protected CourtroomsParser courtroomsParser;
+        protected InmatesParser inmatesParser;
         protected WebDriverWait wait;
 
         protected bool solveCaptchaManually;
@@ -27,14 +33,15 @@ namespace CourtRooms.Models.Crawlers
         protected readonly Action<string> Log;
         protected readonly Action<string> LogLastProcessed;
 
-        protected List<string> NotProcessedCases;
+        protected HashSet<string> NotProcessedCases;
 
         public Crawler(CrawlerParameters parameters)
         {
             selenium = new Selenium();
-            parser = new Parser();
+            courtroomsParser = new CourtroomsParser();
+            inmatesParser = new InmatesParser();
             wait = new WebDriverWait(selenium.Driver, TimeSpan.FromSeconds(15));
-            NotProcessedCases = new List<string>();
+            NotProcessedCases = new HashSet<string>();
 
             Log = parameters.Log;
             LogLastProcessed = parameters.LogLastProcessed;
@@ -104,7 +111,7 @@ namespace CourtRooms.Models.Crawlers
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                isIncorrectCaptcha = parser.IsIncorrectCaptcha(selenium.CurrentPage);
+                isIncorrectCaptcha = courtroomsParser.IsIncorrectCaptcha(selenium.CurrentPage);
                 if (isIncorrectCaptcha)
                     MessageBox.Show("Captcha was entered incorrectly. Please try again.");
             }
@@ -151,7 +158,7 @@ namespace CourtRooms.Models.Crawlers
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                isIncorrectCaptcha = parser.IsIncorrectCaptcha(selenium.CurrentPage);
+                isIncorrectCaptcha = courtroomsParser.IsIncorrectCaptcha(selenium.CurrentPage);
                 if (isIncorrectCaptcha)
                 {
                     Log("Captcha was solved incorrectly. Making another attempt...");
@@ -162,7 +169,124 @@ namespace CourtRooms.Models.Crawlers
             }
         }
 
+        protected async Task AddDefendant(Defendant defendant)
+        {
+            if (cancellationToken.IsCancellationRequested) return;
+            await FillInmatesInfo(defendant);
 
+            if (cancellationToken.IsCancellationRequested) return;
+            if (await DefendantHelper.AddDefendantAsync(defendant))
+                LogCase(defendant);
+            else
+                LogAlreadyExists(defendant.CaseNumber);
+        }
+
+        private void PerformCurrentInmateSearch()
+        {
+            selenium.Driver.FindElementById("SearchBox").SendKeys(OpenQA.Selenium.Keys.Enter);
+            wait.Until(ExpectedConditions.ElementExists(By.ClassName("progress-bar")));
+            wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("InmateSearchTable")));
+        }
+
+        public async Task FillInmatesInfo(Defendant defendant)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+            await selenium.GoToUrlAsync(Constants.InmateSearchUrl, cancellationToken);
+            selenium.Driver.FindElementById("SearchBox").SendKeys($"{defendant.LastName}, {defendant.FirstName}");
+            PerformCurrentInmateSearch();
+
+            for (var pageNumber = 1; GoToInmatesPage(pageNumber); pageNumber++)
+            {
+                var linkNumber = 0;
+                while (ClickNextLinkWithName(ref linkNumber, defendant.LastName))
+                {
+                    linkNumber++;
+
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+
+                    var courtInfos = inmatesParser.GetCourtInformations(selenium.CurrentPage);
+                    if (courtInfos.Any(x => x.CaseNumber == defendant.CaseNumber))
+                    {
+                        defendant.CourtInformations = courtInfos;
+
+                        var caseDetail = inmatesParser.GetCaseDetail(selenium.CurrentPage);
+                        if (caseDetail != null)
+                            defendant.CaseDetails = new List<CaseDetail> { caseDetail };
+
+                        Log($"Found {courtInfos.Count} court{(courtInfos.Count == 1 ? "" : "s")} for the defendant");
+                        return;
+                    }
+                    else
+                    {
+                        PerformCurrentInmateSearch();
+                        GoToInmatesPage(pageNumber);                        
+                    }
+                }
+            }
+            Log("Court information not found");
+        }
+
+        private bool GoToInmatesPage(int pageNumber)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return false;
+
+            var pages = selenium.Driver
+                .FindElementByClassName("panel-footer")
+                ?.FindElements(By.TagName("span"))
+                ?.Where(x => x.Text != "...")
+                ?.ToList();
+
+            if (pages == null || pages.Count < pageNumber + 1)
+                return false;
+
+            var page = pages[pageNumber];
+            
+            wait.Until(ExpectedConditions.ElementToBeClickable(page));
+            page.Click();
+
+            return true;
+        }
+
+        private bool ClickNextLinkWithName(ref int n, string lastName)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return false;
+
+            var trs = selenium.Driver.FindElementById("InmateSearchTable")
+                ?.FindElement(By.TagName("tbody"))
+                ?.FindElements(By.ClassName("row"))
+                .Where(x => !string.IsNullOrEmpty(x.Text))
+                .ToList();
+
+            if (trs == null || trs.Count < n + 1)
+                return false;
+
+            IWebElement nextLink = null;
+            lastName = lastName.ToLower();
+
+            for (var i = n; i < trs.Count; i++)
+            {
+                var a = trs[i].FindElement(By.TagName("a"));
+                if (a.Text.ToLower() == lastName)
+                {
+                    nextLink = a;
+                    n = i;
+                    break;
+                }
+            }
+            if (nextLink == null)
+                return false;
+
+            selenium.ClickWithJsExecutor(nextLink);
+            wait.Until(ExpectedConditions.ElementExists(By.Id("PersonalDetailsTable")));
+
+            return true;
+        }
+         
+        
         protected async Task<Captcha> SolveCaptcha()
         {
             return await Task.Run(() =>

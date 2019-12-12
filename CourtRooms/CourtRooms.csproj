@@ -117,13 +117,14 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Crawlers\CaseNumberCrawler.cs" />
-    <Compile Include="Helpers\Parser.cs" />
+    <Compile Include="Models\Parsers\CourtroomsParser.cs" />
     <Compile Include="Helpers\Selenium.cs" />
     <Compile Include="Models\CrawlerSettings\CalendarCrawlerSettings.cs" />
     <Compile Include="Models\CalendarSearchSettings.cs" />
     <Compile Include="Models\CrawlerSettings\CaseNumberCrawlerSettings.cs" />
     <Compile Include="Models\CrawlerParameters.cs" />
     <Compile Include="Models\CrawlerSettings\CrawlerSettings.cs" />
+    <Compile Include="Models\Parsers\InmatesParser.cs" />
     <Compile Include="Models\TokenResult.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -157,7 +158,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -43,9 +43,9 @@
             this.tabCalendar = new System.Windows.Forms.TabPage();
             this.dtTo = new System.Windows.Forms.DateTimePicker();
             this.ddlRoom = new System.Windows.Forms.ComboBox();
-            this.dtFrom = new System.Windows.Forms.DateTimePicker();
-            this.label2 = new System.Windows.Forms.Label();
             this.lblRoom = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.dtFrom = new System.Windows.Forms.DateTimePicker();
             this.label3 = new System.Windows.Forms.Label();
             this.chkManualCaptcha = new System.Windows.Forms.CheckBox();
             this.tabMain.SuspendLayout();
@@ -205,15 +205,14 @@
             this.ddlRoom.Size = new System.Drawing.Size(140, 24);
             this.ddlRoom.TabIndex = 10;
             // 
-            // dtFrom
+            // lblRoom
             // 
-            this.dtFrom.CustomFormat = "MM/dd/yyyy";
-            this.dtFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtFrom.Location = new System.Drawing.Point(291, 9);
-            this.dtFrom.Name = "dtFrom";
-            this.dtFrom.Size = new System.Drawing.Size(105, 23);
-            this.dtFrom.TabIndex = 10;
-            this.dtFrom.Value = new System.DateTime(2019, 11, 1, 0, 0, 0, 0);
+            this.lblRoom.AutoSize = true;
+            this.lblRoom.Location = new System.Drawing.Point(7, 11);
+            this.lblRoom.Name = "lblRoom";
+            this.lblRoom.Size = new System.Drawing.Size(49, 17);
+            this.lblRoom.TabIndex = 9;
+            this.lblRoom.Text = "Room:";
             // 
             // label2
             // 
@@ -225,14 +224,15 @@
             this.label2.TabIndex = 5;
             this.label2.Text = "Date from:";
             // 
-            // lblRoom
+            // dtFrom
             // 
-            this.lblRoom.AutoSize = true;
-            this.lblRoom.Location = new System.Drawing.Point(7, 11);
-            this.lblRoom.Name = "lblRoom";
-            this.lblRoom.Size = new System.Drawing.Size(49, 17);
-            this.lblRoom.TabIndex = 9;
-            this.lblRoom.Text = "Room:";
+            this.dtFrom.CustomFormat = "MM/dd/yyyy";
+            this.dtFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtFrom.Location = new System.Drawing.Point(291, 9);
+            this.dtFrom.Name = "dtFrom";
+            this.dtFrom.Size = new System.Drawing.Size(105, 23);
+            this.dtFrom.TabIndex = 10;
+            this.dtFrom.Value = new System.DateTime(2019, 11, 1, 0, 0, 0, 0);
             // 
             // label3
             // 

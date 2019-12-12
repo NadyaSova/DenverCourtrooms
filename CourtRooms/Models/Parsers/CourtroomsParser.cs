@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using System.Web;
 using Action = CourtRoomsDataLayer.Entities.Action;
 
-namespace CourtRooms.Helpers
+namespace CourtRooms.Models.Parsers
 {
-    public class Parser
+    public class CourtroomsParser
     {
         HtmlDocument Document;
-        public Parser()
+        public CourtroomsParser()
         {
             Document = new HtmlDocument();
         }
@@ -56,12 +56,8 @@ namespace CourtRooms.Helpers
         {
             Document.LoadHtml(html);
 
-            var nodes = Document.DocumentNode.SelectNodes(@"//p[@class=""error""]");
-            if (nodes == null || nodes.Count == 0)
-                return false;
-
-            var noRecordsNode = nodes.Where(x => x.InnerText.Contains("No records found"));
-            return noRecordsNode.Any();
+            var statusInfo = Document.DocumentNode.SelectNodes(@"//div[@class=""case_details gen_case""]");
+            return statusInfo == null || statusInfo.Count == 0;
         }
 
         private bool IsError()
@@ -92,8 +88,8 @@ namespace CourtRooms.Helpers
             var tds = trs[1].Descendants().Where(x => x.Name == "td").ToArray();
             defendant.CaseStatus = tds[0].InnerText?.Clear();
             defendant.CaseType = tds[1].InnerText?.Clear();
-            defendant.ViolationDate = tds[2].InnerText.ToShortDate();
-            defendant.FiledDate = tds[3].InnerText.ToLongDate();
+            defendant.ViolationDate = tds[2].InnerText.ToDateFromShortFormat();
+            defendant.FiledDate = tds[3].InnerText.ToDateFromDefaultUsFormat();
 
             defendant.Courtroom = tds[4].InnerText?.Clear();
 
@@ -118,7 +114,7 @@ namespace CourtRooms.Helpers
             defendant.FirstName = tds[2].InnerText;
             defendant.Mi = tds[3].InnerText?.Clear();
             defendant.Suffix = tds[4].InnerText?.Clear();
-            defendant.DateOfBirth = tds[5].InnerText.ToShortDate();
+            defendant.DateOfBirth = tds[5].InnerText.ToDateFromShortFormat();
             defendant.PartyStatus = tds[6].InnerText?.Clear();
 
             tds = trs[3].Descendants().Where(x => x.Name == "td").ToArray();
@@ -215,10 +211,10 @@ namespace CourtRooms.Helpers
                 var tds = tr.ChildNodes.Where(x => x.Name == "td").ToArray();
                 details.Add(new BondDetail
                 {
-                    Date = tds[1].InnerText.ToLongDate().Value,
+                    Date = tds[1].InnerText.ToDateFromDefaultUsFormat().Value,
                     ActionCode = tds[2].InnerText?.Clear(),
                     Amount = tds[3].InnerText.ToDoubleMoney(),
-                    SoeDate = tds[4].InnerText.ToShortDate(),
+                    SoeDate = tds[4].InnerText.ToDateFromShortFormat(),
                     RelToParty = tds[5].InnerText?.Clear(),
                 });
             }
@@ -271,7 +267,7 @@ namespace CourtRooms.Helpers
                 var tds = tr.ChildNodes.Where(x => x.Name == "td").ToArray();
                 actions.Add(new Action
                 {
-                    Date = tds[0].InnerText.ToLongDate().Value,
+                    Date = tds[0].InnerText.ToDateFromDefaultUsFormat().Value,
                     Description = tds[1].InnerText?.Clear(),
                     JudicialOfficer = tds[2].InnerText?.Clear(),
                     Courtroom = tds[3].InnerText?.Clear(),
@@ -298,7 +294,7 @@ namespace CourtRooms.Helpers
             foreach (var tr in trs)
             {
                 var tds = tr.ChildNodes.Where(x => x.Name == "td").ToArray();
-                var date = tds[0].InnerText.ToLongDate();
+                var date = tds[0].InnerText.ToDateFromDefaultUsFormat();
 
                 if (date.HasValue)
                 {
@@ -308,7 +304,7 @@ namespace CourtRooms.Helpers
                         Description = tds[1].InnerText?.Clear(),
                         Value = tds[2].InnerText.ToInt(),
                         Units = tds[3].InnerText?.Clear(),
-                        DueDate = tds[4].InnerText?.ToShortDate(),
+                        DueDate = tds[4].InnerText?.ToDateFromShortFormat(),
                         Status = tds[5].InnerText?.Clear(),
                     });
                 }

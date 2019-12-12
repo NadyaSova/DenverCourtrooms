@@ -71,5 +71,10 @@ namespace CourtRooms.Helpers
         {
             await Task.Run(() => { GoToUrl(url); }, cancellationToken);
         }
+
+        public void ClickWithJsExecutor(IWebElement element)
+        {
+            ((IJavaScriptExecutor)Driver).ExecuteScript("arguments[0].click();", element);
+        }
     }
 }
