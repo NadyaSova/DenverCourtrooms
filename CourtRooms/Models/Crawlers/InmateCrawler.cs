@@ -26,7 +26,7 @@ namespace CourtRooms.Models.Crawlers
         {
             selenium = new Selenium();
             inmatesParser = new InmatesParser();
-            wait = new WebDriverWait(selenium.Driver, TimeSpan.FromSeconds(8));
+            wait = new WebDriverWait(selenium.Driver, TimeSpan.FromSeconds(15));
 
             Log = parameters.Log;
             cancellationToken = parameters.CancellationToken;
@@ -100,6 +100,7 @@ namespace CourtRooms.Models.Crawlers
                     return;
 
                 await selenium.GoToUrlAsync(Constants.InmateSearchUrl, cancellationToken);
+                wait.Until(ExpectedConditions.ElementIsVisible(By.Id("SearchBox")));
             }
         }
 
