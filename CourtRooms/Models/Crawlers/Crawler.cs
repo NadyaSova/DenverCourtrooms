@@ -56,14 +56,14 @@ namespace CourtRooms.Models.Crawlers
         protected abstract Task Search(SearchSettingsType settings, string captcha);
         protected abstract Task GoToSearchUrl();
 
-        protected void LogCase(Defendant defendant)
+        protected void LogCase(Defendant defendant, bool isNew)
         {
-            Log($"Added case {defendant.CaseNumber} {defendant.LastName} {defendant.FirstName}");
+            Log($"{(isNew ? "Added" : "Updated")} case {defendant.CaseNumber} {defendant.LastName} {defendant.FirstName}");
         }
 
         protected void LogAlreadyExists(string caseNumber)
         {
-            Log($"Case {caseNumber} already exists in the database");
+            Log($"Case already exists in the database");
         }
 
         protected void LogException(System.Exception ex)
@@ -86,6 +86,36 @@ namespace CourtRooms.Models.Crawlers
                 foreach (var caseNumber in NotProcessedCases)
                     Log(caseNumber);
             }
+        }
+
+        protected async Task ProcessCase(string caseNumber)
+        {
+            if (courtroomsParser.IsNoRecords(selenium.CurrentPage))
+            {
+                Log("Case not found");
+                return;
+            }
+
+            if (cancellationToken.IsCancellationRequested) return;
+            var newDefendant = courtroomsParser.GetDefendant(selenium.CurrentPage);
+            if (newDefendant == null)
+                return;
+
+            var defendant = await DefendantHelper.GetDefendantByCaseNumberAsync(caseNumber);
+            if (defendant == null)
+            {
+                defendant = newDefendant;
+            }
+            else
+            {
+                LogAlreadyExists(caseNumber);
+                if (cancellationToken.IsCancellationRequested) return;
+
+                await DefendantHelper.ClearDefendant(defendant.Id);
+                defendant.UpdateFrom(newDefendant);
+            }
+
+            await AddOrUpdateDefendant(defendant);
         }
 
         protected async Task PassCaptcha(SearchSettingsType settings)
@@ -167,17 +197,19 @@ namespace CourtRooms.Models.Crawlers
             }
         }
 
-        protected async Task AddDefendant(Defendant defendant)
+        protected async Task AddOrUpdateDefendant(Defendant defendant)
         {
             if (cancellationToken.IsCancellationRequested) return;
-            await inmateCrawler.FillInmatesInfo(defendant);
+            await inmateCrawler.FillCourtInfo(defendant);
 
             if (cancellationToken.IsCancellationRequested) return;
-            if (await DefendantHelper.AddDefendantAsync(defendant))
-                LogCase(defendant);
+
+            bool isNew = defendant.Id == 0;
+            if (await DefendantHelper.AddOrUpdateDefendantAsync(defendant))
+                LogCase(defendant, isNew);
             else
                 LogAlreadyExists(defendant.CaseNumber);
-        }         
+        }        
         
         protected async Task<Captcha> SolveCaptcha()
         {

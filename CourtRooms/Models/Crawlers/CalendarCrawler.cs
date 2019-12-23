@@ -89,7 +89,7 @@ namespace CourtRooms.Models.Crawlers
             {
                 try
                 {
-                    await ProcessCase(caseLink, cancellationToken);
+                    await GoToCaseAndProcess(caseLink, cancellationToken);
                     if (cancellationToken.IsCancellationRequested)
                         break;
                 }
@@ -103,35 +103,16 @@ namespace CourtRooms.Models.Crawlers
             LogLastProcessed(searchParameters.DateString);
         }
 
-        private async Task ProcessCase(string caseLink, CancellationToken cancellationToken)
+        private async Task GoToCaseAndProcess(string caseLink, CancellationToken cancellationToken)
         {
             var caseNumber = caseLink.GetUrlParameter("casenumber");
 
             Log(Environment.NewLine + $"Processing case number {caseNumber}...");
 
-            if (await DefendantHelper.CaseExistAsync(caseNumber))
-            {
-                LogAlreadyExists(caseNumber);
-                return;
-            }
-            if (cancellationToken.IsCancellationRequested)
-                return;
-
+            if (cancellationToken.IsCancellationRequested) return;
             await selenium.GoToUrlAsync(caseLink, cancellationToken);
-            if (cancellationToken.IsCancellationRequested)
-                return;
 
-            if (courtroomsParser.IsNoRecords(selenium.CurrentPage))
-            {
-                Log("Case not found");
-                return;
-            }
-
-            var defendant = courtroomsParser.GetDefendant(selenium.CurrentPage);
-            if (defendant == null)
-                return;
-
-            await AddDefendant(defendant);
+            await ProcessCase(caseNumber);
         }
 
         protected override async Task GoToSearchUrl()

@@ -1,4 +1,5 @@
-﻿using CourtRooms.Models.CrawlerSettings;
+﻿using CourtRooms.Helpers;
+using CourtRooms.Models.CrawlerSettings;
 using CourtRoomsDataLayer.Helpers;
 using OpenQA.Selenium;
 using System;
@@ -18,7 +19,7 @@ namespace CourtRooms.Models.Crawlers
             {
                 try
                 {
-                    await ProcessCase(caseNumber);
+                    await GoToCaseAndProcess(caseNumber);
                     if (cancellationToken.IsCancellationRequested)
                         break;
                 }
@@ -32,35 +33,17 @@ namespace CourtRooms.Models.Crawlers
             LogNotProcessed();
         }
 
-        private async Task ProcessCase (string caseNumber)
+        private async Task GoToCaseAndProcess(string caseNumber)
         {
             Log(Environment.NewLine + $"Processing case number {caseNumber}...");
 
-            if (await DefendantHelper.CaseExistAsync(caseNumber))
-            {
-                LogAlreadyExists(caseNumber);
-                return;
-            }
-
+            if (cancellationToken.IsCancellationRequested) return;
             await GoToSearchUrl();
-            if (cancellationToken.IsCancellationRequested)
-                return;
 
+            if (cancellationToken.IsCancellationRequested) return;
             await PassCaptcha(caseNumber);
-            if (cancellationToken.IsCancellationRequested)
-                return;
 
-            if (courtroomsParser.IsNoRecords(selenium.CurrentPage))
-            {
-                Log("Case not found");
-                return;
-            }
-
-            var defendant = courtroomsParser.GetDefendant(selenium.CurrentPage);
-            if (defendant == null)
-                return;
-
-            await AddDefendant(defendant);
+            await ProcessCase(caseNumber);            
             LogLastProcessed(caseNumber);
         }
 

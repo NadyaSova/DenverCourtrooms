@@ -37,7 +37,7 @@ namespace CourtRooms.Models.Crawlers
             selenium.Dispose();
         }
 
-        public async Task FillInmatesInfo(Defendant defendant)
+        public async Task FillCourtInfo(Defendant defendant)
         {
             await GoToInmateSearchIfNeeded();
 
@@ -71,7 +71,7 @@ namespace CourtRooms.Models.Crawlers
                         if (caseDetail != null)
                             defendant.CaseDetails = new List<CaseDetail> { caseDetail };
 
-                        Log($"Found {courtInfos.Count} court{(courtInfos.Count == 1 ? "" : "s")} for the defendant");
+                        Log($"Found {courtInfos.Count} court {(courtInfos.Count == 1 ? "entry" : "entries")} for the defendant");
                         return;
                     }
                     else

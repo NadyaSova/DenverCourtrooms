@@ -104,6 +104,7 @@
       <DependentUpon>CaptchaForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Constants.cs" />
+    <Compile Include="Helpers\DefendantExtensions.cs" />
     <Compile Include="Models\Crawlers\CalendarCrawler.cs" />
     <Compile Include="Models\Crawlers\Crawler.cs" />
     <Compile Include="Extensions\HtmlNodeExtensions.cs" />
