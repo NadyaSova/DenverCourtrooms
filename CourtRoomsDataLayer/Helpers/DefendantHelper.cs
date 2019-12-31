@@ -108,7 +108,9 @@ namespace CourtRoomsDataLayer.Helpers
         {
             using (var db = new CourtRoomsContext())
             {
-                return await db.Defendants.FirstOrDefaultAsync(x => x.CaseNumber == caseNumber);
+                return await db.Defendants
+                    .Include(x => x.CaseDetails)
+                    .FirstOrDefaultAsync(x => x.CaseNumber == caseNumber);
             }
         }
 
@@ -118,7 +120,6 @@ namespace CourtRoomsDataLayer.Helpers
             using (var db = new CourtRoomsContext())
             {
                 await db.CourtInformations.Where(x => x.DefendantId == id).DeleteAsync();
-                await db.CaseDetails.Where(x => x.DefendantId == id).DeleteAsync();
 
                 await db.Actions.Where(x => x.DefendantId == id).DeleteAsync();
                 await db.Attorneys.Where(x => x.DefendantId == id).DeleteAsync();

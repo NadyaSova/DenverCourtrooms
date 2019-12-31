@@ -69,7 +69,11 @@ namespace CourtRooms.Models.Crawlers
 
                         var caseDetail = inmatesParser.GetCaseDetail(selenium.CurrentPage);
                         if (caseDetail != null)
-                            defendant.CaseDetails = new List<CaseDetail> { caseDetail };
+                        {
+                            if (defendant.CaseDetails.All(x => x.BookingDate != caseDetail.BookingDate))
+                                defendant.CaseDetails.Add(caseDetail);
+                        }
+
 
                         Log($"Found {courtInfos.Count} court {(courtInfos.Count == 1 ? "entry" : "entries")} for the defendant");
                         return;
