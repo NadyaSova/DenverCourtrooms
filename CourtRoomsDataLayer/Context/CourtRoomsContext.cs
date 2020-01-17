@@ -21,5 +21,6 @@ namespace CourtRoomsDataLayer.Context
         public DbSet<Sentence> Sentences { get; set; }
         public DbSet<SentenceDetail> SentenceDetails { get; set; }
         public DbSet<Cost> Costs { get; set; }
+        public DbSet<NotFoundCase> NotFoundCases { get; set; }
     }
 }

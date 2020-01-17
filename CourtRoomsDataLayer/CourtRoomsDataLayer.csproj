@@ -99,9 +99,11 @@
     <Compile Include="Entities\Cost.cs" />
     <Compile Include="Entities\CourtInformation.cs" />
     <Compile Include="Entities\Defendant.cs" />
+    <Compile Include="Entities\NotFoundCase.cs" />
     <Compile Include="Entities\Sentence.cs" />
     <Compile Include="Entities\SentenceDetail.cs" />
     <Compile Include="Entities\Violation.cs" />
+    <Compile Include="Helpers\CaseHelper.cs" />
     <Compile Include="Helpers\DefendantHelper.cs" />
     <Compile Include="Migrations\201911091349508_Initial.cs" />
     <Compile Include="Migrations\201911091349508_Initial.Designer.cs">
@@ -122,6 +124,10 @@
     <Compile Include="Migrations\201912061011214_AddCourtInformaion.cs" />
     <Compile Include="Migrations\201912061011214_AddCourtInformaion.Designer.cs">
       <DependentUpon>201912061011214_AddCourtInformaion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202001171236250_AddNotFoundCase.cs" />
+    <Compile Include="Migrations\202001171236250_AddNotFoundCase.Designer.cs">
+      <DependentUpon>202001171236250_AddNotFoundCase.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -149,6 +155,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201912061011214_AddCourtInformaion.resx">
       <DependentUpon>201912061011214_AddCourtInformaion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001171236250_AddNotFoundCase.resx">
+      <DependentUpon>202001171236250_AddNotFoundCase.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

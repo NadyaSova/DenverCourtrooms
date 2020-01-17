@@ -1,5 +1,6 @@
 ﻿using CourtRooms.Extensions;
 using CourtRooms.Models.CrawlerSettings;
+using CourtRoomsDataLayer.Entities;
 using CourtRoomsDataLayer.Helpers;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
@@ -89,7 +90,7 @@ namespace CourtRooms.Models.Crawlers
             {
                 try
                 {
-                    await GoToCaseAndProcess(caseLink, cancellationToken);
+                    await GoToCaseAndProcess(caseLink, searchParameters, cancellationToken);
                     if (cancellationToken.IsCancellationRequested)
                         break;
                 }
@@ -103,7 +104,7 @@ namespace CourtRooms.Models.Crawlers
             LogLastProcessed(searchParameters.DateString);
         }
 
-        private async Task GoToCaseAndProcess(string caseLink, CancellationToken cancellationToken)
+        private async Task GoToCaseAndProcess(string caseLink, CalendarSearchSettings searchSettings, CancellationToken cancellationToken)
         {
             var caseNumber = caseLink.GetUrlParameter("casenumber");
 
@@ -112,6 +113,20 @@ namespace CourtRooms.Models.Crawlers
             if (cancellationToken.IsCancellationRequested) return;
             await selenium.GoToUrlAsync(caseLink, cancellationToken);
 
+            if (courtroomsParser.IsNoRecords(selenium.CurrentPage))
+            {
+                Log("Case not found");
+
+                var notFoundCase = new NotFoundCase
+                {
+                    CaseNumber = caseNumber,
+                    Date = searchSettings.Date,
+                    RoomNumber = searchSettings.CourtroomName
+                };
+
+                await CaseHelper.AddNotFoundCaseAsync(notFoundCase);
+                return;
+            }
             await ProcessCase(caseNumber);
         }
 
