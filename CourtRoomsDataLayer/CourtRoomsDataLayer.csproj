@@ -92,6 +92,7 @@
   <ItemGroup>
     <Compile Include="Context\CourtRoomsContext.cs" />
     <Compile Include="Entities\Action.cs" />
+    <Compile Include="Entities\Arraignment.cs" />
     <Compile Include="Entities\Attorney.cs" />
     <Compile Include="Entities\Bond.cs" />
     <Compile Include="Entities\BondDetail.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Entities\Sentence.cs" />
     <Compile Include="Entities\SentenceDetail.cs" />
     <Compile Include="Entities\Violation.cs" />
+    <Compile Include="Helpers\ArraignmentHelper.cs" />
     <Compile Include="Helpers\CaseHelper.cs" />
     <Compile Include="Helpers\DefendantHelper.cs" />
     <Compile Include="Migrations\201911091349508_Initial.cs" />
@@ -128,6 +130,10 @@
     <Compile Include="Migrations\202001171236250_AddNotFoundCase.cs" />
     <Compile Include="Migrations\202001171236250_AddNotFoundCase.Designer.cs">
       <DependentUpon>202001171236250_AddNotFoundCase.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202001201329298_AddArraignment.cs" />
+    <Compile Include="Migrations\202001201329298_AddArraignment.Designer.cs">
+      <DependentUpon>202001201329298_AddArraignment.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -158,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202001171236250_AddNotFoundCase.resx">
       <DependentUpon>202001171236250_AddNotFoundCase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001201329298_AddArraignment.resx">
+      <DependentUpon>202001201329298_AddArraignment.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

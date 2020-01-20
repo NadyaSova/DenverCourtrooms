@@ -47,10 +47,14 @@
             this.label2 = new System.Windows.Forms.Label();
             this.dtFrom = new System.Windows.Forms.DateTimePicker();
             this.label3 = new System.Windows.Forms.Label();
+            this.tabArraignment = new System.Windows.Forms.TabPage();
             this.chkManualCaptcha = new System.Windows.Forms.CheckBox();
+            this.btnSelectArraignmentFolder = new System.Windows.Forms.Button();
+            this.txtArraignmentFolder = new System.Windows.Forms.TextBox();
             this.tabMain.SuspendLayout();
             this.tabCaseNumber.SuspendLayout();
             this.tabCalendar.SuspendLayout();
+            this.tabArraignment.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnStart
@@ -148,10 +152,11 @@
             this.tabMain.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
             this.tabMain.Controls.Add(this.tabCaseNumber);
             this.tabMain.Controls.Add(this.tabCalendar);
+            this.tabMain.Controls.Add(this.tabArraignment);
             this.tabMain.Location = new System.Drawing.Point(3, 12);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(549, 79);
+            this.tabMain.Size = new System.Drawing.Size(553, 79);
             this.tabMain.TabIndex = 9;
             this.tabMain.SelectedIndexChanged += new System.EventHandler(this.tabMain_SelectedIndexChanged);
             // 
@@ -244,6 +249,18 @@
             this.label3.TabIndex = 6;
             this.label3.Text = "to:";
             // 
+            // tabArraignment
+            // 
+            this.tabArraignment.Controls.Add(this.txtArraignmentFolder);
+            this.tabArraignment.Controls.Add(this.btnSelectArraignmentFolder);
+            this.tabArraignment.Location = new System.Drawing.Point(4, 28);
+            this.tabArraignment.Name = "tabArraignment";
+            this.tabArraignment.Padding = new System.Windows.Forms.Padding(3);
+            this.tabArraignment.Size = new System.Drawing.Size(545, 47);
+            this.tabArraignment.TabIndex = 2;
+            this.tabArraignment.Text = "Import Arraignments";
+            this.tabArraignment.UseVisualStyleBackColor = true;
+            // 
             // chkManualCaptcha
             // 
             this.chkManualCaptcha.AutoSize = true;
@@ -253,6 +270,25 @@
             this.chkManualCaptcha.TabIndex = 10;
             this.chkManualCaptcha.Text = "Solve captcha manually";
             this.chkManualCaptcha.UseVisualStyleBackColor = true;
+            // 
+            // btnSelectArraignmentFolder
+            // 
+            this.btnSelectArraignmentFolder.Location = new System.Drawing.Point(8, 7);
+            this.btnSelectArraignmentFolder.Name = "btnSelectArraignmentFolder";
+            this.btnSelectArraignmentFolder.Size = new System.Drawing.Size(110, 30);
+            this.btnSelectArraignmentFolder.TabIndex = 0;
+            this.btnSelectArraignmentFolder.Text = "Select folder...";
+            this.btnSelectArraignmentFolder.UseVisualStyleBackColor = true;
+            this.btnSelectArraignmentFolder.Click += new System.EventHandler(this.btnSelectArraignmentFolder_Click);
+            // 
+            // txtArraignmentFolder
+            // 
+            this.txtArraignmentFolder.Location = new System.Drawing.Point(125, 11);
+            this.txtArraignmentFolder.Name = "txtArraignmentFolder";
+            this.txtArraignmentFolder.ReadOnly = true;
+            this.txtArraignmentFolder.Size = new System.Drawing.Size(415, 23);
+            this.txtArraignmentFolder.TabIndex = 1;
+            this.txtArraignmentFolder.Text = "C:\\NS\\FilesToDelete\\Arraignment Docket";
             // 
             // MainForm
             // 
@@ -279,6 +315,8 @@
             this.tabCaseNumber.PerformLayout();
             this.tabCalendar.ResumeLayout(false);
             this.tabCalendar.PerformLayout();
+            this.tabArraignment.ResumeLayout(false);
+            this.tabArraignment.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -305,6 +343,9 @@
         private System.Windows.Forms.DateTimePicker dtFrom;
         private System.Windows.Forms.DateTimePicker dtTo;
         private System.Windows.Forms.CheckBox chkManualCaptcha;
+        private System.Windows.Forms.TabPage tabArraignment;
+        private System.Windows.Forms.TextBox txtArraignmentFolder;
+        private System.Windows.Forms.Button btnSelectArraignmentFolder;
     }
 }
 

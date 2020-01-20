@@ -2,7 +2,9 @@
 using CourtRooms.Models;
 using CourtRooms.Models.Crawlers;
 using CourtRooms.Models.CrawlerSettings;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -12,6 +14,7 @@ namespace CourtRooms
     public partial class MainForm : Form
     {
         CancellationTokenSource cancellation;
+        CommonOpenFileDialog dlgSelectFolder;
 
         public MainForm()
         {
@@ -19,6 +22,15 @@ namespace CourtRooms
 
             dtTo.Value = DateTime.Now.Date;
             dtFrom.Value = dtTo.Value.AddMonths(-1);
+
+            var arraignmentsPath = Path.Combine(Directory.GetCurrentDirectory(), "Arraignments");
+            txtArraignmentFolder.Text = arraignmentsPath;
+            dlgSelectFolder = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+                InitialDirectory = arraignmentsPath
+            };
+
             EnableSearch(true);
         }
 
@@ -28,6 +40,8 @@ namespace CourtRooms
                 return ValidateCaseNumberInput();
             else if (tabMain.SelectedTab == tabCalendar)
                 return ValidateCalendarInput();
+            else if (tabMain.SelectedTab == tabArraignment)
+                return true;
 
             return false;
         }
@@ -80,22 +94,22 @@ namespace CourtRooms
 
         private async void btnStart_Click(object sender, EventArgs e)
         {
-            await CollectData();
+            await Start();
         }
 
         private async void txtTo_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-                await CollectData();
+                await Start();
         }
 
         private async void dtTo_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
-                await CollectData();
+                await Start();
         }
 
-        private async Task CollectData()
+        private async Task Start()
         {
             if (!ValidateInput())
                 return;
@@ -138,13 +152,18 @@ namespace CourtRooms
                     await crawler.Start(settings);
                 }
             }
-            else
+            else if (tabMain.SelectedTab == tabCalendar)
             {
                 using (var crawler = new CalendarCrawler(crawlerParameters))
                 {
                     var settings = new CalendarCrawlerSettings(dtFrom.Value, dtTo.Value, ddlRoom.SelectedValue.ToString(), ddlRoom.Text);
                     await crawler.Start(settings);
                 }
+            }
+            else if (tabMain.SelectedTab == tabArraignment)
+            {
+                var crawler = new ArraignmentCrawler(Log, LogLastProcessed);
+                await crawler.Start(txtArraignmentFolder.Text);
             }
         }
 
@@ -234,12 +253,28 @@ namespace CourtRooms
             if (tabMain.SelectedTab == tabCalendar)
             {
                 lblLastProcessedTitle.Text = "Last Processed Date:";
+                chkManualCaptcha.Visible = true;
                 await InitCourtRooms();
             }
             else if (tabMain.SelectedTab == tabCaseNumber)
             {
                 lblLastProcessedTitle.Text = "Last Processed Case:";
+                chkManualCaptcha.Visible = true;
+            }
+            else if (tabMain.SelectedTab == tabArraignment)
+            {
+                lblLastProcessedTitle.Text = "Last Processed File:";
+                chkManualCaptcha.Visible = false;
             }
         }
+
+        private void btnSelectArraignmentFolder_Click(object sender, EventArgs e)
+        {
+            if (dlgSelectFolder.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                txtArraignmentFolder.Text = dlgSelectFolder.FileName;
+            }
+        }
+
     }
 }
