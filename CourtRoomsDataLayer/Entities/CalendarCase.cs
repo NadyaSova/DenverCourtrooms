@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace CourtRoomsDataLayer.Entities
 {
-    [Table("tblNotFoundCase")]
-    public class NotFoundCase
+    [Table("tblCalendarCase")]
+    public class CalendarCase
     {
-        public int Id { get; set; }
-        [Index(IsClustered = false, IsUnique = true)]
+        [Key]
         [StringLength(10)]
         public string CaseNumber { get; set; }
         public DateTime Date { get; set; }
         public string RoomNumber { get; set; }
+        public bool IsFound { get; set; }
     }
 }

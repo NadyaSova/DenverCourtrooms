@@ -11,14 +11,22 @@ namespace CourtRoomsDataLayer.Helpers
 {
     public static class CaseHelper
     {
-        public static async Task<bool> AddNotFoundCaseAsync(NotFoundCase notFoundCase)
+        public static async Task<bool> AddCalendarCaseAsync(CalendarCase ccase)
         {
             using (var db = new CourtRoomsContext())
             {
-                if (await CaseExistAsync(notFoundCase.CaseNumber))
-                    return false;
+                var existingCase = db.CalendarCases.FirstOrDefault(x => x.CaseNumber == ccase.CaseNumber);
+                if (existingCase != null)
+                {
+                    existingCase.Date = ccase.Date;
+                    existingCase.RoomNumber = ccase.RoomNumber;
+                    existingCase.IsFound = ccase.IsFound;             
+                }
+                else
+                {
+                    db.CalendarCases.Add(ccase);
+                }
 
-                db.NotFoundCases.Add(notFoundCase);
                 await db.SaveChangesAsync();
                 return true;
             }
@@ -28,7 +36,7 @@ namespace CourtRoomsDataLayer.Helpers
         {
             using (var db = new CourtRoomsContext())
             {
-                return await db.NotFoundCases.AnyAsync(x => x.CaseNumber == caseNumber);
+                return await db.CalendarCases.AnyAsync(x => x.CaseNumber == caseNumber);
             }
         }
     }

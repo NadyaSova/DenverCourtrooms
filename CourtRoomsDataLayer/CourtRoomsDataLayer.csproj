@@ -100,7 +100,7 @@
     <Compile Include="Entities\Cost.cs" />
     <Compile Include="Entities\CourtInformation.cs" />
     <Compile Include="Entities\Defendant.cs" />
-    <Compile Include="Entities\NotFoundCase.cs" />
+    <Compile Include="Entities\CalendarCase.cs" />
     <Compile Include="Entities\Sentence.cs" />
     <Compile Include="Entities\SentenceDetail.cs" />
     <Compile Include="Entities\Violation.cs" />
@@ -135,6 +135,10 @@
     <Compile Include="Migrations\202001201329298_AddArraignment.Designer.cs">
       <DependentUpon>202001201329298_AddArraignment.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202001211208213_UpdateNotFoundCaseToCalendarCase.cs" />
+    <Compile Include="Migrations\202001211208213_UpdateNotFoundCaseToCalendarCase.Designer.cs">
+      <DependentUpon>202001211208213_UpdateNotFoundCaseToCalendarCase.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -167,6 +171,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202001201329298_AddArraignment.resx">
       <DependentUpon>202001201329298_AddArraignment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001211208213_UpdateNotFoundCaseToCalendarCase.resx">
+      <DependentUpon>202001211208213_UpdateNotFoundCaseToCalendarCase.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

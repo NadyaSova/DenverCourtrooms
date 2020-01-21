@@ -113,20 +113,15 @@ namespace CourtRooms.Models.Crawlers
             if (cancellationToken.IsCancellationRequested) return;
             await selenium.GoToUrlAsync(caseLink, cancellationToken);
 
-            if (courtroomsParser.IsNoRecords(selenium.CurrentPage))
+            var calendarCase = new CalendarCase
             {
-                Log("Case not found");
+                CaseNumber = caseNumber,
+                Date = searchSettings.Date,
+                RoomNumber = searchSettings.CourtroomName,
+                IsFound = !courtroomsParser.IsNoRecords(selenium.CurrentPage)
+            };
 
-                var notFoundCase = new NotFoundCase
-                {
-                    CaseNumber = caseNumber,
-                    Date = searchSettings.Date,
-                    RoomNumber = searchSettings.CourtroomName
-                };
-
-                await CaseHelper.AddNotFoundCaseAsync(notFoundCase);
-                return;
-            }
+            await CaseHelper.AddCalendarCaseAsync(calendarCase);   
             await ProcessCase(caseNumber);
         }
 
