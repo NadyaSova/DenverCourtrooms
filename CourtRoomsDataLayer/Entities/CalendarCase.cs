@@ -17,5 +17,13 @@ namespace CourtRoomsDataLayer.Entities
         public DateTime Date { get; set; }
         public string RoomNumber { get; set; }
         public bool IsFound { get; set; }
+        public string HearingName { get; set; }
+        public string Defendant { get; set; }
+        public string Disposition { get; set; }
+        public string NextCourtroom { get; set; }
+        public DateTime? NextCourtDate { get; set; }
+
+        [NotMapped]
+        public string Link { get; set; }
     }
 }

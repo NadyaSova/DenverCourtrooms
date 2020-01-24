@@ -1,5 +1,6 @@
 ﻿using CourtRooms.Extensions;
 using CourtRooms.Models.CrawlerSettings;
+using CourtRooms.Models.Parsers;
 using CourtRoomsDataLayer.Entities;
 using CourtRoomsDataLayer.Helpers;
 using OpenQA.Selenium;
@@ -20,6 +21,7 @@ namespace CourtRooms.Models.Crawlers
         private string token = null;
         private CalendarSearchSettings testSearchParameters = null;
         private List<string> notProcessedDates = new List<string>();
+        private CalendarCaseParser calendarCaseParser = new CalendarCaseParser();
 
         public override async Task Start(CalendarCrawlerSettings crawlerSettings)
         {
@@ -59,8 +61,8 @@ namespace CourtRooms.Models.Crawlers
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var caseLinks = courtroomsParser.GetCaseLinks(selenium.CurrentPage);
-            if (caseLinks == null)
+            var cases = calendarCaseParser.GetCalendarCases(selenium.CurrentPage);
+            if (cases == null)
             {
                 var isTokenValid = await IsTokenValid();
                 if (cancellationToken.IsCancellationRequested)
@@ -84,45 +86,40 @@ namespace CourtRooms.Models.Crawlers
             }
 
 
-            Log($"{caseLinks.Count} cases found");
+            Log($"{cases.Count} cases found");
 
-            foreach (var caseLink in caseLinks)
+            foreach (var calendarCase in cases)
             {
                 try
                 {
-                    await GoToCaseAndProcess(caseLink, searchParameters, cancellationToken);
+                    calendarCase.Date = searchParameters.Date;
+                    calendarCase.RoomNumber = searchParameters.CourtroomName;
+
+                    await GoToCaseAndProcess(calendarCase, searchParameters, cancellationToken);
                     if (cancellationToken.IsCancellationRequested)
                         break;
                 }
                 catch (Exception ex)
                 {
                     LogException(ex);
-                    NotProcessedCases.Add(caseLink.GetUrlParameter("casenumber"));
+                    NotProcessedCases.Add(calendarCase.Link.GetUrlParameter("casenumber"));
                 }
             }
 
             LogLastProcessed(searchParameters.DateString);
         }
 
-        private async Task GoToCaseAndProcess(string caseLink, CalendarSearchSettings searchSettings, CancellationToken cancellationToken)
+        private async Task GoToCaseAndProcess(CalendarCase calendarCase, CalendarSearchSettings searchSettings, CancellationToken cancellationToken)
         {
-            var caseNumber = caseLink.GetUrlParameter("casenumber");
-
-            Log(Environment.NewLine + $"Processing case number {caseNumber}...");
+            Log(Environment.NewLine + $"Processing case number {calendarCase.CaseNumber}...");
 
             if (cancellationToken.IsCancellationRequested) return;
-            await selenium.GoToUrlAsync(caseLink, cancellationToken);
+            await selenium.GoToUrlAsync(calendarCase.Link, cancellationToken);
 
-            var calendarCase = new CalendarCase
-            {
-                CaseNumber = caseNumber,
-                Date = searchSettings.Date,
-                RoomNumber = searchSettings.CourtroomName,
-                IsFound = !courtroomsParser.IsNoRecords(selenium.CurrentPage)
-            };
+            calendarCase.IsFound = !courtroomsParser.IsNoRecords(selenium.CurrentPage);
 
-            await CaseHelper.AddCalendarCaseAsync(calendarCase);   
-            await ProcessCase(caseNumber);
+            await CaseHelper.AddCalendarCaseAsync(calendarCase);
+            await ProcessCase(calendarCase.CaseNumber);
         }
 
         protected override async Task GoToSearchUrl()
@@ -171,7 +168,7 @@ namespace CourtRooms.Models.Crawlers
 
             //If we still see come cases, the token is valid.
             //If we don't see them, the token has expired.
-            var caseLinks = courtroomsParser.GetCaseLinks(selenium.CurrentPage);
+            var caseLinks = calendarCaseParser.GetCalendarCases(selenium.CurrentPage);
             return caseLinks != null;
         }
 
@@ -202,14 +199,14 @@ namespace CourtRooms.Models.Crawlers
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-            var caseLinks = courtroomsParser.GetCaseLinks(selenium.CurrentPage);
-            if (caseLinks == null || caseLinks.Count == 0)
+            var cases = calendarCaseParser.GetCalendarCases(selenium.CurrentPage);
+            if (cases == null || cases.Count == 0)
                 return new TokenResult { IsEmpty = true };
 
             return new TokenResult
             {
                 IsEmpty = false,
-                Token = caseLinks[0].GetUrlParameter("token")
+                Token = cases[0].Link.GetUrlParameter("token")
             };
         }
         protected override void LogNotProcessed()

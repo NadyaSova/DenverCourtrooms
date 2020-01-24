@@ -322,16 +322,5 @@ namespace CourtRooms.Models.Parsers
 
             return sentences;
         }
-
-        public List<string> GetCaseLinks(string html)
-        {
-            Document.LoadHtml(html);
-
-            var nodes = Document.DocumentNode.SelectNodes(@"//td[@class=""case_no""]/a");
-            if (nodes == null || nodes.Count == 0)
-                return null;
-            
-            return nodes.Select(x => HttpUtility.HtmlDecode(x.Attributes["href"]?.Value)).Where(x => x != null).ToList();
-        }
     }
 }

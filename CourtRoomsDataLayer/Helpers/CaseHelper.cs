@@ -20,7 +20,12 @@ namespace CourtRoomsDataLayer.Helpers
                 {
                     existingCase.Date = ccase.Date;
                     existingCase.RoomNumber = ccase.RoomNumber;
-                    existingCase.IsFound = ccase.IsFound;             
+                    existingCase.IsFound = ccase.IsFound;
+                    existingCase.HearingName = ccase.HearingName;
+                    existingCase.Defendant = ccase.Defendant;
+                    existingCase.Disposition = ccase.Disposition;
+                    existingCase.NextCourtroom = ccase.NextCourtroom;
+                    existingCase.NextCourtDate = ccase.NextCourtDate;
                 }
                 else
                 {

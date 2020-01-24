@@ -139,6 +139,10 @@
     <Compile Include="Migrations\202001211208213_UpdateNotFoundCaseToCalendarCase.Designer.cs">
       <DependentUpon>202001211208213_UpdateNotFoundCaseToCalendarCase.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202001241428578_AddFieldsToCalendarCase.cs" />
+    <Compile Include="Migrations\202001241428578_AddFieldsToCalendarCase.Designer.cs">
+      <DependentUpon>202001241428578_AddFieldsToCalendarCase.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -174,6 +178,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202001211208213_UpdateNotFoundCaseToCalendarCase.resx">
       <DependentUpon>202001211208213_UpdateNotFoundCaseToCalendarCase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001241428578_AddFieldsToCalendarCase.resx">
+      <DependentUpon>202001241428578_AddFieldsToCalendarCase.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
