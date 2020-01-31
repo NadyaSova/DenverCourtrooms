@@ -46,7 +46,7 @@ namespace CourtRooms.Models.Parsers
                 }
 
                 var tds = row.Descendants("td").ToArray();
-                if (tds == null || tds.Length < 5)
+                if (tds == null || tds.Length < 3)
                     continue;
 
                 var nodeLink = tds[0].FirstChild;
@@ -59,10 +59,14 @@ namespace CourtRooms.Models.Parsers
                     Link = HttpUtility.HtmlDecode(nodeLink.Attributes["href"]?.Value),
                     CaseNumber = nodeLink.InnerText.Clear(),
                     Defendant = tds[1].InnerText?.Clear(),
-                    Disposition = tds[2].InnerText?.Clear(),
-                    NextCourtroom = tds[3].InnerText?.Clear(),
-                    NextCourtDate = tds[4].InnerText?.ToDateFromDefaultUsFormat(),
+                    Disposition = tds[2].InnerText?.Clear()
                 };
+
+                if (tds.Length >= 5)
+                {
+                    calendarCase.NextCourtroom = tds[3].InnerText?.Clear();
+                    calendarCase.NextCourtDate = tds[4].InnerText?.ToDateFromDefaultUsFormat();
+                }
 
                 result.Add(calendarCase);
             }
