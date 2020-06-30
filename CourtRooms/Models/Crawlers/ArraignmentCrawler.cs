@@ -11,9 +11,9 @@ namespace CourtRooms.Models.Crawlers
 {
     public class ArraignmentCrawler
     {
-        private Action<string> Log;
-        private Action<string> LogLastProcessed;
-        private ArraignmentParser parser;
+        private readonly Action<string> Log;
+        private readonly Action<string> LogLastProcessed;
+        private readonly ArraignmentParser parser;
 
 
         public ArraignmentCrawler(Action<string> log, Action<string> logLastProcessed)

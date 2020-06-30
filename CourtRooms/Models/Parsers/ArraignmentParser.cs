@@ -51,7 +51,7 @@ namespace CourtRooms.Models.Parsers
         private Arraignment GetArraignment(HtmlNode node, Arraignment current)
         {
             var tds = node.Descendants()?.Where(x => x.Name == "td")?.ToArray();
-            if (tds == null || tds.Length == 0)
+            if (tds == null || tds.Length < 8)
                 return null;
 
             var caseNumber = tds[0].InnerText?.Clear();
@@ -61,7 +61,7 @@ namespace CourtRooms.Models.Parsers
             var offer = tds[6].InnerText?.Clear();
             var bond = HttpUtility.HtmlDecode(tds[7].InnerText?.Clear());
             
-            if (string.IsNullOrEmpty(caseNumber))
+            if (string.IsNullOrEmpty(caseNumber) && current != null)
             {
                 //Append data
                 if (!string.IsNullOrEmpty(offer))
